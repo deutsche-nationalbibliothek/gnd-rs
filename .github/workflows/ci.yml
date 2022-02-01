@@ -77,6 +77,44 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: --all-features --all-targets -- -D warnings
 
+  # Find unused dependencies in Cargo.toml
+  udeps:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy
+          override: true
+      - uses: actions-rs/install@v0.1
+        with:
+          use-tool-cache: true
+          crate: cargo-udeps
+          version: latest
+      - run: |
+        cargo udeps
+
+  # Shows which dependencies in Cargo.toml can be upgraded to a newer version.
+  upgrades:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy
+          override: true
+      - uses: actions-rs/install@v0.1
+        with:
+          use-tool-cache: true
+          crate: cargo-upgrades
+          version: latest
+      - run: |
+        cargo upgrades
+
   # collect and aggregate code coverage data with grcov
   coverage:
     needs: test
