@@ -1,0 +1,19 @@
+branch: true
+llvm: true
+ignore-not-existing: true
+filter: covered
+output-type: lcov
+output-path: ./lcov.info
+binary-path: ./target/debug/
+prefix-dir: /home/user/build/
+excl-br-line: \#\\[(derive(.*)\\]
+excl-br-start: \#\\[test\\]
+excl-br-stop: cov:excl-br-stop
+excl-line: cov:excl-line
+excl-start: mod test
+excl-stop: cov:excl-stop
+ignore:
+  - "examples/*"
+  - "tests/*"
+  - "../**"
+  - "/*"
