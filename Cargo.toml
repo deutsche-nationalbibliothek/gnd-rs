@@ -2,7 +2,7 @@
 name = "gnd-rs"
 version = "0.1.0"
 edition = "2021"
-authors = "Nico Wagner <n.wagner@dnb.de>"
+authors = ["Nico Wagner <n.wagner@dnb.de>"]
 description = "Tools to analyze and process the Integrated Authority File managed by the DNB"
 homepage = "https://www.dnb.de/DE/Professionell/ProjekteKooperationen/Projekte/KI/ki_node.html"
 
