@@ -94,7 +94,7 @@ jobs:
           crate: cargo-udeps
           version: latest
       - run: |
-        cargo udeps
+          cargo udeps
 
   # Shows which dependencies in Cargo.toml can be upgraded to a newer version.
   upgrades:
@@ -113,7 +113,7 @@ jobs:
           crate: cargo-upgrades
           version: latest
       - run: |
-        cargo upgrades
+          cargo upgrades
 
   # collect and aggregate code coverage data with grcov
   coverage:
