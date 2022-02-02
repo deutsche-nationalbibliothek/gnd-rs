@@ -7,3 +7,8 @@ description = "Tools to analyze and process the Integrated Authority File manage
 homepage = "https://www.dnb.de/DE/Professionell/ProjekteKooperationen/Projekte/KI/ki_node.html"
 
 [dependencies]
+clap = { version = "3.0", features = ["derive"] }
+
+[[bin]]
+path = "src/bin/gnd/main.rs"
+name = "gnd"
