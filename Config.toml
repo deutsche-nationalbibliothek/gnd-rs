@@ -1,0 +1,3 @@
+[concept]
+filter = "002@.0 =~ '^T[bfgpsu][1z]$' && 008A.a == 's' && !008@.a? && 007K.a == 'gnd'"
+
