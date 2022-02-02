@@ -7,13 +7,13 @@ use crate::CliResult;
 
 #[derive(Deserialize, Default, PartialEq, Debug)]
 pub struct Config {
-    concept: ConceptConfig,
+    pub(crate) concept: ConceptConfig,
 }
 
 #[derive(Deserialize, Default, PartialEq, Debug)]
 #[serde(deny_unknown_fields)]
 pub struct ConceptConfig {
-    filter: String,
+    pub(crate) filter: Option<String>,
 }
 
 impl Config {

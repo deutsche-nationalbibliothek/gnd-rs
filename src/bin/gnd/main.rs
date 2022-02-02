@@ -49,7 +49,7 @@ fn main() {
     };
 
     let result = match args.command {
-        Commands::Skosify { paths } => skosify::run(&paths, &config),
+        Commands::Skosify(args) => skosify::run(&config, &args),
     };
 
     match result {
