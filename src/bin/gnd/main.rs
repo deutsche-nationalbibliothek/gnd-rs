@@ -13,6 +13,7 @@ pub type CliResult<T> = Result<T, CliError>;
 
 #[derive(Debug)]
 pub enum CliError {
+    Pica(pica::Error),
     Toml(toml::de::Error),
     Io(io::Error),
     Other(String),
@@ -21,10 +22,17 @@ pub enum CliError {
 impl fmt::Display for CliError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
+            CliError::Pica(ref e) => e.fmt(f),
             CliError::Toml(ref e) => e.fmt(f),
             CliError::Io(ref e) => e.fmt(f),
             CliError::Other(ref s) => f.write_str(s),
         }
+    }
+}
+
+impl From<pica::Error> for CliError {
+    fn from(err: pica::Error) -> Self {
+        CliError::Pica(err)
     }
 }
 
@@ -61,6 +69,10 @@ fn main() {
         }
         Err(CliError::Io(err)) => {
             eprintln!("IO Error: {}", err);
+            process::exit(1);
+        }
+        Err(CliError::Pica(err)) => {
+            eprintln!("pica: {}", err);
             process::exit(1);
         }
         Err(CliError::Toml(err)) => {

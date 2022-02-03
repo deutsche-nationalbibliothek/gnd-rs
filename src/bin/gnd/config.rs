@@ -14,6 +14,7 @@ pub struct Config {
 #[serde(deny_unknown_fields)]
 pub struct ConceptConfig {
     pub(crate) filter: Option<String>,
+    pub(crate) skip_invalid: bool,
 }
 
 impl Config {
