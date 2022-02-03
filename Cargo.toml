@@ -12,6 +12,10 @@ pica = { git = "https://github.com/deutsche-nationalbibliothek/pica-rs.git", bra
 serde = { version = "1.0", features = ["derive"] }
 toml = "0.5"
 
+[lib]
+path = "src/lib.rs"
+name = "gnd"
+
 [[bin]]
 path = "src/bin/gnd/main.rs"
 name = "gnd"
