@@ -1,5 +1,5 @@
 [package]
-name = "gnd-rs"
+name = "gnd"
 version = "0.1.0"
 edition = "2021"
 authors = ["Nico Wagner <n.wagner@dnb.de>"]
@@ -11,10 +11,6 @@ clap = { version = "3.0", features = ["derive"] }
 pica = { git = "https://github.com/deutsche-nationalbibliothek/pica-rs.git", branch = "main" }
 serde = { version = "1.0", features = ["derive"] }
 toml = "0.5"
-
-[lib]
-path = "src/lib.rs"
-name = "gnd"
 
 [[bin]]
 path = "src/bin/gnd/main.rs"
