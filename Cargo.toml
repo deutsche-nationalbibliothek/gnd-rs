@@ -8,6 +8,7 @@ homepage = "https://www.dnb.de/DE/Professionell/ProjekteKooperationen/Projekte/K
 
 [dependencies]
 clap = { version = "3.0", features = ["derive"] }
+pica = { git = "https://github.com/deutsche-nationalbibliothek/pica-rs.git", branch = "main" }
 serde = { version = "1.0", features = ["derive"] }
 toml = "0.5"
 
