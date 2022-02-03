@@ -2,7 +2,9 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
-#[derive(Parser)]
+use crate::skosify::SkosifyArgs;
+
+#[derive(Parser, Debug)]
 #[clap(name = "gnd")]
 pub(crate) struct Cli {
     #[clap(long, short, required = false, parse(from_os_str))]
@@ -12,11 +14,8 @@ pub(crate) struct Cli {
     pub(crate) command: Commands,
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Debug)]
 pub(crate) enum Commands {
     #[clap(about = "Convert the integrated authority file to SKOS")]
-    Skosify {
-        #[clap(required = false, parse(from_os_str))]
-        paths: Vec<PathBuf>,
-    },
+    Skosify(SkosifyArgs),
 }
