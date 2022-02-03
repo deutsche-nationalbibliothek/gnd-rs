@@ -4,6 +4,7 @@ use clap::Parser;
 
 mod cli;
 mod config;
+mod macros;
 mod skosify;
 
 use cli::{Cli, Commands};
