@@ -10,25 +10,6 @@ impl Concept {
     pub fn kind(&self) -> &ConceptKind {
         &self.kind
     }
-
-    pub fn is_person(&self) -> bool {
-        self.kind == ConceptKind::Person
-    }
-    pub fn is_corporate_body(&self) -> bool {
-        self.kind == ConceptKind::CorporateBody
-    }
-    pub fn is_conference(&self) -> bool {
-        self.kind == ConceptKind::Conference
-    }
-    pub fn is_place(&self) -> bool {
-        self.kind == ConceptKind::Place
-    }
-    pub fn is_subject_term(&self) -> bool {
-        self.kind == ConceptKind::SubjectTerm
-    }
-    pub fn is_work(&self) -> bool {
-        self.kind == ConceptKind::Work
-    }
 }
 
 #[derive(Debug, PartialEq)]
