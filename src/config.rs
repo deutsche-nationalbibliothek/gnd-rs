@@ -14,6 +14,8 @@ pub struct Config {
 #[serde(deny_unknown_fields)]
 pub struct ConceptConfig {
     pub filter: Option<String>,
+    pub base_uri: Option<String>,
+    pub gnd_id: bool,
     pub skip_invalid: bool,
 }
 
