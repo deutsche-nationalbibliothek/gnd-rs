@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use clap::Parser;
-use gnd::Config;
+use gnd::{Concept, Config};
 use pica::matcher::{MatcherFlags, RecordMatcher};
 use pica::ReaderBuilder;
 
@@ -55,7 +55,8 @@ pub(crate) fn run(config: &Config, args: &SkosifyArgs) -> CliResult<()> {
             let record = result?;
 
             if filter.is_match(&record, &matcher_flags) {
-                println!("match!");
+                let concept = Concept::from_record(&record, config);
+                println!("concept = {:?}", concept);
                 break;
             }
         }

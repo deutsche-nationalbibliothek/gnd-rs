@@ -1,12 +1,34 @@
 use std::fmt;
 use std::str::FromStr;
 
+use lazy_static::lazy_static;
+use pica::{Path, StringRecord};
+
+lazy_static! {
+    static ref IDN_PATH: Path = Path::from_str("003@.0").unwrap();
+    static ref GND_ID_PATH: Path = Path::from_str("003U.a").unwrap();
+    static ref BBG_PATH: Path = Path::from_str("002@.0").unwrap();
+}
+
+use crate::conference::ConferenceBuilder;
+use crate::corporate_body::CorporateBodyBuilder;
+use crate::person::PersonBuilder;
+use crate::place::PlaceBuilder;
+use crate::subject_term::SubjectTermBuilder;
+use crate::work::WorkBuilder;
+use crate::{Config, Error, Result};
+
 #[derive(Debug)]
 pub struct Concept {
-    kind: ConceptKind,
+    pub(crate) uri: String,
+    pub(crate) kind: ConceptKind,
 }
 
 impl Concept {
+    pub fn uri(&self) -> &str {
+        &self.uri
+    }
+
     pub fn kind(&self) -> &ConceptKind {
         &self.kind
     }
@@ -35,34 +57,58 @@ impl fmt::Display for ConceptKind {
     }
 }
 
-impl FromStr for ConceptKind {
-    type Err = &'static str;
+pub(crate) trait ConceptBuilder {
+    fn from_record(record: &StringRecord, config: &Config) -> Result<Concept>;
 
-    /// Parse a concept kind from from a string slice.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// use gnd::ConceptKind;
-    /// use std::str::FromStr;
-    ///
-    /// # fn main() { example().unwrap(); }
-    /// fn example() -> Result<(), Box<dyn std::error::Error>> {
-    ///     let kind = ConceptKind::from_str("p")?;
-    ///     assert_eq!(kind, ConceptKind::Person);
-    ///
-    ///     Ok(())
-    /// }
-    /// ```
-    fn from_str(input: &str) -> Result<Self, Self::Err> {
-        match input {
-            "p" => Ok(ConceptKind::Person),
-            "b" => Ok(ConceptKind::CorporateBody),
-            "f" => Ok(ConceptKind::Conference),
-            "g" => Ok(ConceptKind::Place),
-            "s" => Ok(ConceptKind::SubjectTerm),
-            "u" => Ok(ConceptKind::Work),
-            _ => Err("invalid kind"),
+    fn uri(record: &StringRecord, config: &Config) -> Result<String> {
+        if config.concept.gnd_id {
+            Ok(record
+                .path(&GND_ID_PATH)
+                .first()
+                .map(ToString::to_string)
+                .ok_or_else(|| {
+                    Error::Concept("could not find valid gnd_id".to_string())
+                })?)
+        } else {
+            let idn = record
+                .path(&IDN_PATH)
+                .first()
+                .map(ToString::to_string)
+                .ok_or_else(|| {
+                Error::Concept("could not find valid idn".to_string())
+            })?;
+
+            if let Some(base_uri) = &config.concept.base_uri {
+                Ok(base_uri.to_owned() + &idn)
+            } else {
+                Err(Error::Concept(
+                    "expected config option `base_uri`".to_string(),
+                ))
+            }
+        }
+    }
+}
+
+impl Concept {
+    pub fn from_record(
+        record: &StringRecord,
+        config: &Config,
+    ) -> Result<Concept> {
+        let bbg = record.path(&BBG_PATH).first().unwrap().to_string();
+
+        match &bbg[1..2] {
+            "p" => PersonBuilder::from_record(record, config),
+            "b" => CorporateBodyBuilder::from_record(record, config),
+            "f" => ConferenceBuilder::from_record(record, config),
+            "g" => PlaceBuilder::from_record(record, config),
+            "s" => SubjectTermBuilder::from_record(record, config),
+            "u" => WorkBuilder::from_record(record, config),
+            s => {
+                return Err(Error::Concept(format!(
+                    "unknown concept kind '{}'",
+                    s
+                )))
+            }
         }
     }
 }
@@ -70,27 +116,6 @@ impl FromStr for ConceptKind {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_kind_from_str() {
-        assert_eq!(ConceptKind::from_str("p").unwrap(), ConceptKind::Person);
-        assert_eq!(
-            ConceptKind::from_str("b").unwrap(),
-            ConceptKind::CorporateBody
-        );
-        assert_eq!(
-            ConceptKind::from_str("f").unwrap(),
-            ConceptKind::Conference
-        );
-        assert_eq!(ConceptKind::from_str("g").unwrap(), ConceptKind::Place);
-        assert_eq!(
-            ConceptKind::from_str("s").unwrap(),
-            ConceptKind::SubjectTerm
-        );
-        assert_eq!(ConceptKind::from_str("u").unwrap(), ConceptKind::Work);
-
-        assert!(ConceptKind::from_str("x").is_err());
-    }
 
     #[test]
     fn test_kind_to_string() {

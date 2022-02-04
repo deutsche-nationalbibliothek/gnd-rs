@@ -1,6 +1,12 @@
 mod concept;
+mod conference;
 mod config;
+mod corporate_body;
 mod error;
+mod person;
+mod place;
+mod subject_term;
+mod work;
 
 pub use concept::{Concept, ConceptKind};
 pub use config::Config;
