@@ -3,19 +3,18 @@ use std::{fmt, io, process};
 use clap::Parser;
 
 mod cli;
-mod config;
 mod macros;
 mod skosify;
 
 use cli::{Cli, Commands};
-use config::Config;
+use gnd::Config;
 
 pub type CliResult<T> = Result<T, CliError>;
 
 #[derive(Debug)]
 pub enum CliError {
     Pica(pica::Error),
-    Toml(toml::de::Error),
+    Gnd(gnd::Error),
     Io(io::Error),
     Other(String),
 }
@@ -24,10 +23,16 @@ impl fmt::Display for CliError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             CliError::Pica(ref e) => e.fmt(f),
-            CliError::Toml(ref e) => e.fmt(f),
+            CliError::Gnd(ref e) => e.fmt(f),
             CliError::Io(ref e) => e.fmt(f),
             CliError::Other(ref s) => f.write_str(s),
         }
+    }
+}
+
+impl From<gnd::Error> for CliError {
+    fn from(err: gnd::Error) -> Self {
+        CliError::Gnd(err)
     }
 }
 
@@ -40,12 +45,6 @@ impl From<pica::Error> for CliError {
 impl From<io::Error> for CliError {
     fn from(err: io::Error) -> Self {
         CliError::Io(err)
-    }
-}
-
-impl From<toml::de::Error> for CliError {
-    fn from(err: toml::de::Error) -> Self {
-        CliError::Toml(err)
     }
 }
 
@@ -72,12 +71,12 @@ fn main() {
             eprintln!("IO Error: {}", err);
             process::exit(1);
         }
-        Err(CliError::Pica(err)) => {
-            eprintln!("pica: {}", err);
+        Err(CliError::Gnd(err)) => {
+            eprintln!("gnd: {}", err);
             process::exit(1);
         }
-        Err(CliError::Toml(err)) => {
-            eprintln!("toml: {}", err);
+        Err(CliError::Pica(err)) => {
+            eprintln!("pica: {}", err);
             process::exit(1);
         }
         Err(CliError::Other(err)) => {
