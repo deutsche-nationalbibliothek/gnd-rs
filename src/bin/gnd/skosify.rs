@@ -1,10 +1,10 @@
 use std::path::PathBuf;
 
 use clap::Parser;
+use gnd::Config;
 use pica::matcher::{MatcherFlags, RecordMatcher};
 use pica::ReaderBuilder;
 
-use crate::config::Config;
 use crate::{cli_flag, cli_option, CliError, CliResult};
 
 const DEFAULT_FILTER: &str = "002@.0 =~ '^T[bfgpsu][1-7z]$'";
