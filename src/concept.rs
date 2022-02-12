@@ -16,21 +16,41 @@ use crate::person::PersonBuilder;
 use crate::place::PlaceBuilder;
 use crate::subject_term::SubjectTermBuilder;
 use crate::work::WorkBuilder;
-use crate::{Config, Error, Result};
+use crate::{Config, Error, Result, SynSet, Synonym};
 
 #[derive(Debug)]
 pub struct Concept {
     pub(crate) uri: String,
     pub(crate) kind: ConceptKind,
+    pub(crate) synset: SynSet,
 }
 
 impl Concept {
+    pub fn new<S>(uri: S, kind: ConceptKind) -> Self
+    where
+        S: Into<String>,
+    {
+        Self {
+            uri: uri.into(),
+            synset: SynSet::new(),
+            kind,
+        }
+    }
+
+    pub fn add_synonym(&mut self, synonym: Synonym) -> bool {
+        self.synset.insert(synonym)
+    }
+
     pub fn uri(&self) -> &str {
         &self.uri
     }
 
     pub fn kind(&self) -> &ConceptKind {
         &self.kind
+    }
+
+    pub fn synset(&self) -> &SynSet {
+        &self.synset
     }
 }
 
