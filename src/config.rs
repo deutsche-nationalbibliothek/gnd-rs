@@ -8,6 +8,7 @@ use crate::{Error, Result};
 #[derive(Deserialize, Default, PartialEq, Debug)]
 pub struct Config {
     pub concept: ConceptConfig,
+    pub skosify: SkosifyConfig,
 }
 
 #[derive(Deserialize, Default, PartialEq, Debug)]
@@ -17,6 +18,12 @@ pub struct ConceptConfig {
     pub base_uri: Option<String>,
     pub gnd_id: bool,
     pub skip_invalid: bool,
+}
+
+#[derive(Deserialize, Default, PartialEq, Debug)]
+#[serde(deny_unknown_fields)]
+pub struct SkosifyConfig {
+    pub pretty: bool,
 }
 
 impl Config {

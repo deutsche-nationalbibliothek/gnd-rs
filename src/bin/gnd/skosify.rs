@@ -19,6 +19,12 @@ use crate::{cli_flag, cli_option, CliError, CliResult};
 
 const DEFAULT_FILTER: &str = "002@.0 =~ '^T[bfgpsu][1-7z]$'";
 
+macro_rules! prefix {
+    ($prefix:expr, $uri:expr) => {
+        (Prefix::new_unchecked($prefix), Iri::new_unchecked($uri))
+    };
+}
+
 pub(crate) mod skos {
     namespace!(
         "http://www.w3.org/2004/02/skos/core#",
@@ -118,24 +124,23 @@ pub(crate) fn run(config: &Config, args: &SkosifyArgs) -> CliResult<()> {
         }
     }
 
+    let gnd_uri = config
+        .concept
+        .base_uri
+        .as_ref()
+        .unwrap_or(&"https://d-nb.info/gnd/".to_string())
+        .to_string();
+
     let prefixes = [
-        (
-            Prefix::new_unchecked("gnd"),
-            Iri::new_unchecked("http://d-nb.info/gnd/"),
-        ),
-        (
-            Prefix::new_unchecked("skos"),
-            Iri::new_unchecked("http://www.w3.org/2004/02/skos/core#"),
-        ),
-        (
-            Prefix::new_unchecked("rdf"),
-            Iri::new_unchecked("http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
-        ),
+        prefix!("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
+        prefix!("skos", "http://www.w3.org/2004/02/skos/core#"),
+        prefix!("gnd", &gnd_uri),
     ];
 
     let config = TurtleConfig::new()
-        .with_pretty(true)
+        .with_pretty(config.skosify.pretty)
         .with_prefix_map(&prefixes[..]);
+
     let mut ser = TurtleSerializer::new_with_config(writer, config);
     ser.serialize_graph(&graph).unwrap();
 
