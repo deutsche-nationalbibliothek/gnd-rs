@@ -113,6 +113,21 @@ impl ConceptBuilder for PersonBuilder {
             if let Some(synonym) =
                 get_synonym(field, SynKind::Alternative, translit)
             {
+                if let Some(captures) = RE.captures(synonym.label()) {
+                    if let Some(hidden_label) =
+                        SynonymBuilder::new(SynKind::Hidden)
+                            .translit(translit)
+                            .push_str(format!(
+                                "{} {}",
+                                captures.get(2).unwrap().as_str(),
+                                captures.get(1).unwrap().as_str()
+                            ))
+                            .build()
+                    {
+                        concept.add_synonym(hidden_label);
+                    }
+                }
+
                 concept.add_synonym(synonym);
             }
         }
