@@ -15,7 +15,7 @@ fn get_biographical_data(record: &StringRecord) -> Option<String> {
     let flags = MatcherFlags::default();
 
     if let Some(field) =
-        record.iter().find(|field| matcher.is_match(&field, &flags))
+        record.iter().find(|field| matcher.is_match(field, &flags))
     {
         match (field.first('a'), field.first('b')) {
             (Some(from), Some(to)) => Some(format!(" ({}-{})", from, to)),
@@ -77,32 +77,31 @@ impl ConceptBuilder for PersonBuilder {
             translit,
         ) {
             if let Some(captures) = RE.captures(synonym.label()) {
-                let hidden_label = SynonymBuilder::new(SynKind::Hidden)
+                if let Some(hidden_label) = SynonymBuilder::new(SynKind::Hidden)
                     .translit(translit)
                     .push_str(format!(
                         "{} {}",
                         captures.get(2).unwrap().as_str(),
                         captures.get(1).unwrap().as_str()
                     ))
-                    .build();
-                if hidden_label.is_some() {
-                    concept.add_synonym(hidden_label.unwrap());
+                    .build()
+                {
+                    concept.add_synonym(hidden_label);
                 }
             }
 
             if let Some(biographical_data) = get_biographical_data(record) {
-                let pref_label = SynonymBuilder::from(&synonym)
+                if let Some(pref_label) = SynonymBuilder::from(&synonym)
                     .push_str(biographical_data)
-                    .build();
-                if pref_label.is_some() {
-                    concept.add_synonym(pref_label.unwrap());
+                    .build()
+                {
+                    concept.add_synonym(pref_label);
 
-                    let alt_label = SynonymBuilder::from(&synonym)
+                    if let Some(alt_label) = SynonymBuilder::from(&synonym)
                         .kind(SynKind::Hidden)
-                        .build();
-
-                    if alt_label.is_some() {
-                        concept.add_synonym(alt_label.unwrap());
+                        .build()
+                    {
+                        concept.add_synonym(alt_label);
                     }
                 }
             } else {
