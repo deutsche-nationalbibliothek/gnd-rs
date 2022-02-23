@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate sophia_api;
+
 use std::{fmt, io, process};
 
 use clap::Parser;

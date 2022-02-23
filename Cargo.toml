@@ -7,11 +7,16 @@ description = "Tools to analyze and process the Integrated Authority File manage
 homepage = "https://www.dnb.de/DE/Professionell/ProjekteKooperationen/Projekte/KI/ki_node.html"
 
 [dependencies]
+bstr = "0.2"
 clap = { version = "3.0", features = ["derive"] }
 lazy_static = "1.4"
 pica = { git = "https://github.com/deutsche-nationalbibliothek/pica-rs.git", branch = "main" }
+regex = "1.5"
 serde = { version = "1.0", features = ["derive"] }
+sophia = "0.7"
+sophia_api = "0.7"
 toml = "0.5"
+unicode-normalization = "0.1"
 
 [[bin]]
 path = "src/bin/gnd/main.rs"
