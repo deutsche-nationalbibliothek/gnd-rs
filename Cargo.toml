@@ -16,6 +16,7 @@ serde = { version = "1.0", features = ["derive"] }
 sophia = "0.7"
 sophia_api = "0.7"
 toml = "0.5"
+unicode-normalization = "0.1"
 
 [[bin]]
 path = "src/bin/gnd/main.rs"

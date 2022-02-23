@@ -1,4 +1,5 @@
 use crate::concept::ConceptBuilder;
+use crate::config::TranslitChoice;
 use crate::{Concept, ConceptKind, Config, Result, SynKind, Synonym};
 use pica::{Field, StringRecord};
 
@@ -6,28 +7,32 @@ const CHECK: [char; 4] = ['n', 'd', 'c', 'g'];
 
 pub(crate) struct ConferenceBuilder;
 
-fn get_synonym(field: &Field, kind: SynKind) -> Option<Synonym> {
-    let mut synonym = Synonym::builder(kind);
+fn get_synonym(
+    field: &Field,
+    kind: SynKind,
+    translit: Option<&TranslitChoice>,
+) -> Option<Synonym> {
+    let mut synonym = Synonym::builder(kind).translit(translit);
     let mut parens = String::new();
 
     for subfield in field.iter() {
         let value = String::from_utf8(subfield.value().to_vec()).unwrap();
 
         if !CHECK.contains(&subfield.code()) && !parens.is_empty() {
-            synonym.push_str(&format!(" ({})", parens));
+            synonym = synonym.push_str(&format!(" ({})", parens));
             parens.clear();
         }
 
         match subfield.code() {
             'a' => {
-                synonym.push_str(&value.replace('@', ""));
+                synonym = synonym.push_str(&value.replace('@', ""));
             }
             'x' | 'b' => {
-                synonym.push_str(&format!(" / {}", value));
+                synonym = synonym.push_str(&format!(" / {}", value));
             }
             'g' => {
                 if parens.is_empty() {
-                    synonym.push_str(&format!(" ({})", value));
+                    synonym = synonym.push_str(&format!(" ({})", value));
                 } else {
                     parens.push_str(&format!(" ({})", value));
                 }
@@ -43,7 +48,7 @@ fn get_synonym(field: &Field, kind: SynKind) -> Option<Synonym> {
     }
 
     if !parens.is_empty() {
-        synonym.push_str(&format!(" ({})", parens));
+        synonym = synonym.push_str(&format!(" ({})", parens));
     }
 
     synonym.build()
@@ -53,15 +58,20 @@ impl ConceptBuilder for ConferenceBuilder {
     fn from_record(record: &StringRecord, config: &Config) -> Result<Concept> {
         let uri = Self::uri(record, config)?;
         let mut concept = Concept::new(uri, ConceptKind::Conference);
+        let translit = config.concept.translit.as_ref();
 
-        if let Some(synonym) =
-            get_synonym(record.first("030A").unwrap(), SynKind::Preferred)
-        {
+        if let Some(synonym) = get_synonym(
+            record.first("030A").unwrap(),
+            SynKind::Preferred,
+            translit,
+        ) {
             concept.add_synonym(synonym);
         }
 
         for field in record.all("030@").unwrap_or_default() {
-            if let Some(synonym) = get_synonym(field, SynKind::Alternative) {
+            if let Some(synonym) =
+                get_synonym(field, SynKind::Alternative, translit)
+            {
                 concept.add_synonym(synonym);
             }
         }

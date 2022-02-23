@@ -1,29 +1,58 @@
 use crate::concept::ConceptBuilder;
+use crate::config::TranslitChoice;
+use crate::synset::SynonymBuilder;
 use crate::{Concept, ConceptKind, Config, Result, SynKind, Synonym};
 
+use lazy_static::lazy_static;
+use pica::matcher::{FieldMatcher, MatcherFlags};
 use pica::{Field, StringRecord};
+use regex::Regex;
 
 pub(crate) struct PersonBuilder;
 
-fn get_synonym(field: &Field, kind: SynKind) -> Option<Synonym> {
-    let mut synonym = Synonym::builder(kind);
+fn get_biographical_data(record: &StringRecord) -> Option<String> {
+    let matcher = FieldMatcher::new("060R.4 == 'datl'").unwrap();
+    let flags = MatcherFlags::default();
+
+    if let Some(field) =
+        record.iter().find(|field| matcher.is_match(&field, &flags))
+    {
+        match (field.first('a'), field.first('b')) {
+            (Some(from), Some(to)) => Some(format!(" ({}-{})", from, to)),
+            (Some(from), None) => Some(format!(" ({}", from)),
+            (None, Some(to)) => Some(format!(" ({}", to)),
+            _ => None,
+        }
+    } else {
+        None
+    }
+}
+
+fn get_synonym(
+    field: &Field,
+    kind: SynKind,
+    translit: Option<&TranslitChoice>,
+) -> Option<Synonym> {
+    let mut synonym = Synonym::builder(kind).translit(translit);
 
     if field.contains_code('a') {
-        synonym.push(field.first('a'));
-        synonym.push_with_prefix(field.first('d'), ", ");
-        synonym.push_with_prefix(field.first('c'), " ");
+        synonym = synonym
+            .push(field.first('a'))
+            .push_with_prefix(field.first('d'), ", ")
+            .push_with_prefix(field.first('c'), " ");
     } else if field.contains_code('P') {
-        synonym.push(field.first('P'));
+        synonym = synonym.push(field.first('P'));
 
         match (field.first('n'), field.first('l')) {
             (Some(numeration), Some(title)) => {
-                synonym.push_str(&format!(" ({}, {})", numeration, title));
+                synonym =
+                    synonym.push_str(&format!(" ({}, {})", numeration, title));
             }
             (Some(numeration), None) => {
-                synonym.push_str(&format!(" ({})", numeration));
+                synonym = synonym.push_str(&format!(" ({})", numeration));
             }
             (None, Some(title)) => {
-                synonym.push_str(&format!(" ({})", title));
+                synonym = synonym.push_str(&format!(" ({})", title));
             }
             (None, None) => (),
         }
@@ -36,15 +65,55 @@ impl ConceptBuilder for PersonBuilder {
     fn from_record(record: &StringRecord, config: &Config) -> Result<Concept> {
         let uri = Self::uri(record, config)?;
         let mut concept = Concept::new(uri, ConceptKind::Person);
+        let translit = config.concept.translit.as_ref();
 
-        if let Some(synonym) =
-            get_synonym(record.first("028A").unwrap(), SynKind::Preferred)
-        {
-            concept.add_synonym(synonym);
+        lazy_static! {
+            static ref RE: Regex = Regex::new(r"([^,]+),\s([^,]+)$").unwrap();
+        }
+
+        if let Some(synonym) = get_synonym(
+            record.first("028A").unwrap(),
+            SynKind::Preferred,
+            translit,
+        ) {
+            if let Some(captures) = RE.captures(synonym.label()) {
+                let hidden_label = SynonymBuilder::new(SynKind::Hidden)
+                    .translit(translit)
+                    .push_str(format!(
+                        "{} {}",
+                        captures.get(2).unwrap().as_str(),
+                        captures.get(1).unwrap().as_str()
+                    ))
+                    .build();
+                if hidden_label.is_some() {
+                    concept.add_synonym(hidden_label.unwrap());
+                }
+            }
+
+            if let Some(biographical_data) = get_biographical_data(record) {
+                let pref_label = SynonymBuilder::from(&synonym)
+                    .push_str(biographical_data)
+                    .build();
+                if pref_label.is_some() {
+                    concept.add_synonym(pref_label.unwrap());
+
+                    let alt_label = SynonymBuilder::from(&synonym)
+                        .kind(SynKind::Hidden)
+                        .build();
+
+                    if alt_label.is_some() {
+                        concept.add_synonym(alt_label.unwrap());
+                    }
+                }
+            } else {
+                concept.add_synonym(synonym);
+            }
         }
 
         for field in record.all("028@").unwrap_or_default() {
-            if let Some(synonym) = get_synonym(field, SynKind::Alternative) {
+            if let Some(synonym) =
+                get_synonym(field, SynKind::Alternative, translit)
+            {
                 concept.add_synonym(synonym);
             }
         }

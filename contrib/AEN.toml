@@ -5,8 +5,9 @@
 filter = "002@.0 =~ '^T[bfgpsu][1z]$' && 008A.a == 's' && !008@.a? && 007K.a == 'gnd'"
 
 skip_invalid = true # Whether to skip invalid PICA+ records or not.
-# base_uri = "http://d-nb.info/gnd/" # Base-URI for concepts.
-gnd_id = true # Whether to use GND ID or `base_uri` + IDN as concept uri.
+base_uri = "http://d-nb.info/gnd/" # Base-URI for concepts.
+gnd_id = false # Whether to use GND ID or `base_uri` + IDN as concept uri.
+translit = "nfc"
 
 [skosify]
 pretty = true # Whether to beautify (indent, prefixes) the output or not.

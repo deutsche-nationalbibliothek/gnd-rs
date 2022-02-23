@@ -131,15 +131,15 @@ pub(crate) fn run(config: &Config, args: &SkosifyArgs) -> CliResult<()> {
         .unwrap_or(&"https://d-nb.info/gnd/".to_string())
         .to_string();
 
-    let prefixes = [
-        prefix!("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
-        prefix!("skos", "http://www.w3.org/2004/02/skos/core#"),
-        prefix!("gnd", &gnd_uri),
-    ];
-
     let config = TurtleConfig::new()
         .with_pretty(config.skosify.pretty)
-        .with_prefix_map(&prefixes[..]);
+        .with_prefix_map(
+            &[
+                prefix!("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
+                prefix!("skos", "http://www.w3.org/2004/02/skos/core#"),
+                prefix!("gnd", &gnd_uri),
+            ][..],
+        );
 
     let mut ser = TurtleSerializer::new_with_config(writer, config);
     ser.serialize_graph(&graph).unwrap();

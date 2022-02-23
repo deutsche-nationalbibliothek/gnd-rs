@@ -18,6 +18,17 @@ pub struct ConceptConfig {
     pub base_uri: Option<String>,
     pub gnd_id: bool,
     pub skip_invalid: bool,
+    pub translit: Option<TranslitChoice>,
+}
+
+#[derive(Deserialize, PartialEq, Debug, Clone)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "lowercase")]
+pub enum TranslitChoice {
+    Nfc,
+    Nfd,
+    Nfkc,
+    Nfkd,
 }
 
 #[derive(Deserialize, Default, PartialEq, Debug)]
