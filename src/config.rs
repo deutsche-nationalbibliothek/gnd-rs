@@ -11,7 +11,7 @@ pub struct Config {
     pub skosify: SkosifyConfig,
 }
 
-#[derive(Deserialize, Default, PartialEq, Debug)]
+#[derive(Deserialize, PartialEq, Debug)]
 #[serde(deny_unknown_fields)]
 pub struct ConceptConfig {
     pub filter: Option<String>,
@@ -19,6 +19,18 @@ pub struct ConceptConfig {
     pub gnd_id: bool,
     pub skip_invalid: bool,
     pub translit: Option<TranslitChoice>,
+}
+
+impl Default for ConceptConfig {
+    fn default() -> Self {
+        Self {
+            filter: None,
+            base_uri: None,
+            gnd_id: true,
+            skip_invalid: false,
+            translit: None,
+        }
+    }
 }
 
 #[derive(Deserialize, PartialEq, Debug, Clone)]
