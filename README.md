@@ -5,3 +5,36 @@
 Dieses Repository enthält Tools zur Analyse und Weiterverarbeitung der [Gemeinsamen Normdatei](https://gnd.network). Es handelt sich um Entwicklungen zur Unterstützung der Forschungsarbeiten im Projekt [Automatisches Erschließungssystem](https://www.dnb.de/DE/Professionell/ProjekteKooperationen/Projekte/KI/ki_node.html) der [Deutschen Nationalbibliothek](https://www.dnb.de).
 
 Die Tools sind nicht für den produktiven Einsatz empfohlen. Es wird kein Support geleistet.
+
+
+## Commands
+
+### skosify
+
+
+```bash
+$ gnd --config contrib/AEN.toml tests/data/118515551.dat.gz
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX gnd: <http://d-nb.info/gnd/>
+
+gnd:118515551 a skos:Concept;
+  skos:altLabel "브로흐, 헤르만"@de,
+    "Broxi, Herman"@de,
+    "Broch, German"@de,
+    "ברוך, הרמן"@de,
+    "ヘルマン・ブロッホ"@de,
+    "Broch, Herman"@de,
+    "Broh, Herman"@de,
+    "Mproch, Cherman"@de;
+  skos:hiddenLabel "הרמן ברוך"@de,
+    "German Broch"@de,
+    "Herman Broxi"@de,
+    "Herman Broh"@de,
+    "헤르만 브로흐"@de,
+    "Herman Broch"@de,
+    "Hermann Broch"@de,
+    "Cherman Mproch"@de,
+    "Broch, Hermann"@de;
+  skos:prefLabel "Broch, Hermann (1886-1951)"@de.
+```
