@@ -26,7 +26,7 @@ impl Default for ConceptConfig {
         Self {
             filter: None,
             base_uri: "http://d-nb.info/gnd/".to_string(),
-            gnd_id: true,
+            gnd_id: false,
             skip_invalid: false,
             translit: None,
         }
