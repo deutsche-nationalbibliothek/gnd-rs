@@ -28,7 +28,7 @@ fn get_biographical_data(record: &StringRecord) -> Option<String> {
     }
 }
 
-fn get_synonym(
+pub(crate) fn get_synonym(
     field: &Field,
     kind: SynKind,
     translit: Option<&TranslitChoice>,

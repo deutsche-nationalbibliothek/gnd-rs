@@ -1,6 +1,11 @@
 use crate::concept::ConceptBuilder;
 use crate::config::TranslitChoice;
-use crate::{Concept, ConceptKind, Config, Result, SynKind, Synonym};
+use crate::synset::SynonymBuilder;
+use crate::{
+    conference, corporate_body, person, place, Concept, ConceptKind, Config,
+    Result, SynKind, Synonym,
+};
+use pica::matcher::{MatcherFlags, SubfieldMatcher};
 use pica::{Field, StringRecord};
 
 pub(crate) struct WorkBuilder;
@@ -38,6 +43,41 @@ fn get_synonym(
     synonym.build()
 }
 
+fn get_prefix(record: &StringRecord) -> Option<String> {
+    let matcher =
+        SubfieldMatcher::new("4 in ['aut1', 'kom1', 'kue1']").unwrap();
+    let flags = MatcherFlags::default();
+
+    for tag in &["028R", "065R", "029R", "030R"] {
+        for field in record.all(tag).unwrap_or_default() {
+            if field
+                .iter()
+                .any(|subfield| matcher.is_match(subfield, &flags))
+            {
+                let result = match *tag {
+                    "028R" => person::get_synonym(field, SynKind::Hidden, None),
+                    "029R" => corporate_body::get_synonym(
+                        field,
+                        SynKind::Hidden,
+                        None,
+                    ),
+                    "030R" => {
+                        conference::get_synonym(field, SynKind::Hidden, None)
+                    }
+                    "065R" => place::get_synonym(field, SynKind::Hidden, None),
+                    _ => unreachable!(),
+                };
+
+                if let Some(synonym) = result {
+                    return Some(synonym.label().to_owned());
+                }
+            }
+        }
+    }
+
+    None
+}
+
 impl ConceptBuilder for WorkBuilder {
     fn from_record(record: &StringRecord, config: &Config) -> Result<Concept> {
         let translit = config.concept.translit.as_ref();
@@ -52,14 +92,37 @@ impl ConceptBuilder for WorkBuilder {
             SynKind::Preferred,
             translit,
         ) {
-            concept.add_synonym(synonym);
+            if let Some(prefix) = get_prefix(record) {
+                if let Some(synonym) = SynonymBuilder::new(SynKind::Preferred)
+                    .push_str(&format!("{} : {}", prefix, synonym.label()))
+                    .build()
+                {
+                    concept.add_synonym(synonym);
+                }
+            } else {
+                concept.add_synonym(synonym);
+            }
         }
 
         for field in record.all("022@").unwrap_or_default() {
             if let Some(synonym) =
                 get_synonym(field, SynKind::Alternative, translit)
             {
-                concept.add_synonym(synonym);
+                if let Some(prefix) = get_prefix(record) {
+                    if let Some(synonym) =
+                        SynonymBuilder::new(SynKind::Alternative)
+                            .push_str(&format!(
+                                "{} : {}",
+                                prefix,
+                                synonym.label()
+                            ))
+                            .build()
+                    {
+                        concept.add_synonym(synonym);
+                    }
+                } else {
+                    concept.add_synonym(synonym);
+                }
             }
         }
 
