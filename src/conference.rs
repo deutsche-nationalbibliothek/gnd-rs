@@ -7,7 +7,7 @@ const CHECK: [char; 4] = ['n', 'd', 'c', 'g'];
 
 pub(crate) struct ConferenceBuilder;
 
-fn get_synonym(
+pub(crate) fn get_synonym(
     field: &Field,
     kind: SynKind,
     translit: Option<&TranslitChoice>,

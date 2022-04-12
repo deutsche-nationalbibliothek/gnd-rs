@@ -5,7 +5,7 @@ use pica::{Field, StringRecord};
 
 pub(crate) struct PlaceBuilder;
 
-fn get_synonym(
+pub(crate) fn get_synonym(
     field: &Field,
     kind: SynKind,
     translit: Option<&TranslitChoice>,
