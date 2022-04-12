@@ -111,8 +111,7 @@ pub(crate) trait ConceptBuilder {
     fn relations(record: &StringRecord, config: &Config) -> Vec<Relation> {
         let result = ["022R", "028R", "029R", "030R", "041R", "065R"]
             .iter()
-            .map(|f| record.all(f).unwrap_or_default())
-            .flatten()
+            .flat_map(|f| record.all(f).unwrap_or_default())
             .filter_map(|f| Relation::try_from(f).ok())
             .map(|mut r| {
                 r.uri = config.concept.base_uri.to_owned() + &r.uri;
