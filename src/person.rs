@@ -19,8 +19,8 @@ fn get_biographical_data(record: &StringRecord) -> Option<String> {
     {
         match (field.first('a'), field.first('b')) {
             (Some(from), Some(to)) => Some(format!(" ({}-{})", from, to)),
-            (Some(from), None) => Some(format!(" ({}", from)),
-            (None, Some(to)) => Some(format!(" ({}", to)),
+            (Some(from), None) => Some(format!(" ({})", from)),
+            (None, Some(to)) => Some(format!(" ({})", to)),
             _ => None,
         }
     } else {
