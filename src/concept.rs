@@ -16,17 +16,18 @@ use crate::person::PersonBuilder;
 use crate::place::PlaceBuilder;
 use crate::subject_term::SubjectTermBuilder;
 use crate::work::WorkBuilder;
-use crate::{Config, Error, Result, SynSet, Synonym};
+use crate::{Config, Error, Relation, Result, SynSet, Synonym};
 
 #[derive(Debug)]
 pub struct Concept {
     pub(crate) uri: String,
     pub(crate) kind: ConceptKind,
     pub(crate) synset: SynSet,
+    pub(crate) relations: Vec<Relation>,
 }
 
 impl Concept {
-    pub fn new<S>(uri: S, kind: ConceptKind) -> Self
+    pub fn new<S>(uri: S, relations: Vec<Relation>, kind: ConceptKind) -> Self
     where
         S: Into<String>,
     {
@@ -34,6 +35,7 @@ impl Concept {
             uri: uri.into(),
             synset: SynSet::new(),
             kind,
+            relations,
         }
     }
 
@@ -51,6 +53,10 @@ impl Concept {
 
     pub fn synset(&self) -> &SynSet {
         &self.synset
+    }
+
+    pub fn relations(&self) -> &Vec<Relation> {
+        &self.relations
     }
 }
 
@@ -98,14 +104,23 @@ pub(crate) trait ConceptBuilder {
                 Error::Concept("could not find valid idn".to_string())
             })?;
 
-            if let Some(base_uri) = &config.concept.base_uri {
-                Ok(base_uri.to_owned() + &idn)
-            } else {
-                Err(Error::Concept(
-                    "expected config option `base_uri`".to_string(),
-                ))
-            }
+            Ok(config.concept.base_uri.to_owned() + &idn)
         }
+    }
+
+    fn relations(record: &StringRecord, config: &Config) -> Vec<Relation> {
+        let result = ["022R", "028R", "029R", "030R", "041R", "065R"]
+            .iter()
+            .map(|f| record.all(f).unwrap_or_default())
+            .flatten()
+            .filter_map(|f| Relation::try_from(f).ok())
+            .map(|mut r| {
+                r.uri = config.concept.base_uri.to_owned() + &r.uri;
+                r
+            })
+            .collect::<Vec<Relation>>();
+
+        result
     }
 }
 
