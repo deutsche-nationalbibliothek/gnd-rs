@@ -42,7 +42,9 @@ fn get_synonym(
 impl ConceptBuilder for SubjectTermBuilder {
     fn from_record(record: &StringRecord, config: &Config) -> Result<Concept> {
         let uri = Self::uri(record, config)?;
-        let mut concept = Concept::new(uri, ConceptKind::SubjectTerm);
+        let relations = Self::relations(record, config);
+        let mut concept =
+            Concept::new(uri, relations, ConceptKind::SubjectTerm);
         let translit = config.concept.translit.as_ref();
 
         if let Some(synonym) = get_synonym(

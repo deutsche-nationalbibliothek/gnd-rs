@@ -3,7 +3,7 @@ use std::io::{self, Write};
 use std::path::PathBuf;
 
 use clap::Parser;
-use gnd::{Concept, Config, SynKind};
+use gnd::{Concept, Config, RelationKind, SynKind};
 use pica::matcher::{MatcherFlags, RecordMatcher};
 use pica::ReaderBuilder;
 use sophia::graph::inmem::LightGraph;
@@ -33,6 +33,7 @@ pub(crate) mod skos {
         altLabel,
         hiddenLabel,
         broader,
+        narrower,
         related
     );
 }
@@ -120,17 +121,26 @@ pub(crate) fn run(config: &Config, args: &SkosifyArgs) -> CliResult<()> {
                         }
                     }
                 }
+
+                for relation in concept.relations() {
+                    let uri = Iri::new(relation.uri()).unwrap();
+                    match *relation.kind() {
+                        RelationKind::Broader => {
+                            graph.insert(&subj, &skos::broader, &uri).unwrap();
+                        }
+                        RelationKind::Narrower => {
+                            graph.insert(&subj, &skos::narrower, &uri).unwrap();
+                        }
+                        RelationKind::Related => {
+                            graph.insert(&subj, &skos::related, &uri).unwrap();
+                        }
+                    }
+                }
             }
         }
     }
 
-    let gnd_uri = config
-        .concept
-        .base_uri
-        .as_ref()
-        .unwrap_or(&"https://d-nb.info/gnd/".to_string())
-        .to_string();
-
+    let gnd_uri = config.concept.base_uri.to_string();
     let config = TurtleConfig::new()
         .with_pretty(config.skosify.pretty)
         .with_prefix_map(

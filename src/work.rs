@@ -40,9 +40,12 @@ fn get_synonym(
 
 impl ConceptBuilder for WorkBuilder {
     fn from_record(record: &StringRecord, config: &Config) -> Result<Concept> {
-        let mut concept =
-            Concept::new(Self::uri(record, config)?, ConceptKind::Work);
         let translit = config.concept.translit.as_ref();
+        let mut concept = Concept::new(
+            Self::uri(record, config)?,
+            Self::relations(record, config),
+            ConceptKind::Work,
+        );
 
         if let Some(synonym) = get_synonym(
             record.first("022A").unwrap(),

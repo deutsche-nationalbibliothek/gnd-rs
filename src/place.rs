@@ -34,9 +34,12 @@ fn get_synonym(
 
 impl ConceptBuilder for PlaceBuilder {
     fn from_record(record: &StringRecord, config: &Config) -> Result<Concept> {
-        let uri = Self::uri(record, config)?;
-        let mut concept = Concept::new(uri, ConceptKind::Place);
         let translit = config.concept.translit.as_ref();
+        let mut concept = Concept::new(
+            Self::uri(record, config)?,
+            Self::relations(record, config),
+            ConceptKind::Place,
+        );
 
         if let Some(synonym) = get_synonym(
             record.first("065A").unwrap(),
