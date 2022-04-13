@@ -7,9 +7,13 @@ filter = "002@.0 =~ '^T[bfgpsu][1z]$' && 008A.a == 's' && !008@.a? && 007K.a == 
 # Whether to skip invalid PICA+ records or not.
 skip_invalid = true
 
+# Ignore synonyms less than `min_synonym_length`.
+min_synonym_length = 4
+
 # Use `base_uri` + IDN instead of GND ID
 base_uri = "http://d-nb.info/gnd/"
 gnd_id = false
+
 
 # Transliterate synonyms
 translit = "nfd"

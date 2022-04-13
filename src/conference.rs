@@ -11,8 +11,11 @@ pub(crate) fn get_synonym(
     field: &Field,
     kind: SynKind,
     translit: Option<&TranslitChoice>,
+    min_length: usize,
 ) -> Option<Synonym> {
-    let mut synonym = Synonym::builder(kind).translit(translit);
+    let mut synonym = Synonym::builder(kind)
+        .translit(translit)
+        .min_length(min_length);
     let mut parens = String::new();
 
     for subfield in field.iter() {
@@ -57,6 +60,8 @@ pub(crate) fn get_synonym(
 impl ConceptBuilder for ConferenceBuilder {
     fn from_record(record: &StringRecord, config: &Config) -> Result<Concept> {
         let translit = config.concept.translit.as_ref();
+        let min_length = config.concept.min_synonym_length;
+
         let mut concept = Concept::new(
             Self::uri(record, config)?,
             Self::relations(record, config),
@@ -67,13 +72,14 @@ impl ConceptBuilder for ConferenceBuilder {
             record.first("030A").unwrap(),
             SynKind::Preferred,
             translit,
+            min_length,
         ) {
             concept.add_synonym(synonym);
         }
 
         for field in record.all("030@").unwrap_or_default() {
             if let Some(synonym) =
-                get_synonym(field, SynKind::Alternative, translit)
+                get_synonym(field, SynKind::Alternative, translit, min_length)
             {
                 concept.add_synonym(synonym);
             }
