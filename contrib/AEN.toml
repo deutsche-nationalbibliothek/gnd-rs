@@ -31,6 +31,12 @@ translit = "nfd"
 # base_uri = "http://d-nb.info/aen/entity-code#"
 # filter = "^[a-z]+$"
 
+# [[collection]]
+# name = "DDC Subject Category"
+# path = "037G.c"
+# base_uri = "http://dewey.info/class/"
+# filter = "^[TABC0-9\\.\\-]+$"
+
 [skosify]
 
 # Whether to beautify (indent, prefixes) the output or not.
