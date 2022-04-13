@@ -40,6 +40,7 @@ pub struct SynonymBuilder {
     buffer: String,
     kind: SynKind,
     translit: Option<TranslitChoice>,
+    min_length: usize,
 }
 
 impl SynonymBuilder {
@@ -49,6 +50,7 @@ impl SynonymBuilder {
             buffer,
             kind,
             translit: None,
+            min_length: 0,
         }
     }
 
@@ -59,6 +61,11 @@ impl SynonymBuilder {
 
     pub fn translit(mut self, translit: Option<&TranslitChoice>) -> Self {
         self.translit = translit.cloned();
+        self
+    }
+
+    pub fn min_length(mut self, min_length: usize) -> Self {
+        self.min_length = min_length;
         self
     }
 
@@ -109,7 +116,11 @@ impl SynonymBuilder {
                 _ => self.buffer,
             };
 
-            Some(Synonym::new(&label, self.kind))
+            if label.len() >= self.min_length {
+                Some(Synonym::new(&label, self.kind))
+            } else {
+                None
+            }
         } else {
             None
         }

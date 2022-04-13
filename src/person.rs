@@ -32,8 +32,11 @@ pub(crate) fn get_synonym(
     field: &Field,
     kind: SynKind,
     translit: Option<&TranslitChoice>,
+    min_length: usize,
 ) -> Option<Synonym> {
-    let mut synonym = Synonym::builder(kind).translit(translit);
+    let mut synonym = Synonym::builder(kind)
+        .translit(translit)
+        .min_length(min_length);
 
     if field.contains_code('a') {
         synonym = synonym
@@ -64,6 +67,8 @@ pub(crate) fn get_synonym(
 impl ConceptBuilder for PersonBuilder {
     fn from_record(record: &StringRecord, config: &Config) -> Result<Concept> {
         let translit = config.concept.translit.as_ref();
+        let min_length = config.concept.min_synonym_length;
+
         let mut concept = Concept::new(
             Self::uri(record, config)?,
             Self::relations(record, config),
@@ -79,6 +84,7 @@ impl ConceptBuilder for PersonBuilder {
             record.first("028A").unwrap(),
             SynKind::Preferred,
             translit,
+            min_length,
         ) {
             if let Some(captures) = RE.captures(synonym.label()) {
                 if let Some(hidden_label) = SynonymBuilder::new(SynKind::Hidden)
@@ -115,7 +121,7 @@ impl ConceptBuilder for PersonBuilder {
 
         for field in record.all("028@").unwrap_or_default() {
             if let Some(synonym) =
-                get_synonym(field, SynKind::Alternative, translit)
+                get_synonym(field, SynKind::Alternative, translit, min_length)
             {
                 if let Some(captures) = RE.captures(synonym.label()) {
                     if let Some(hidden_label) =
