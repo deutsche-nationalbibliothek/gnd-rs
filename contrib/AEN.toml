@@ -14,6 +14,23 @@ gnd_id = false
 # Transliterate synonyms
 translit = "nfd"
 
+# [[collection]]
+# name = "GND Subject Category"
+# path = "042A.a"
+# base_uri = "http://d-nb.info/standards/vocab/gnd/gnd-sc#"
+# filter = "^(\\d+|\\d+\\.\\d+)[a-z]*$"
+
+# [[collection]]
+# name = "Geographic Area Code"
+# path = "042B.a"
+# base_uri = "http://d-nb.info/standards/vocab/gnd/geographic-area-code#"
+
+# [[collection]]
+# name = "GND Entity Codes"
+# path = "004B.a"
+# base_uri = "http://d-nb.info/aen/entity-code#"
+# filter = "^[a-z]+$"
+
 [skosify]
 
 # Whether to beautify (indent, prefixes) the output or not.

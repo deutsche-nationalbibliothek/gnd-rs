@@ -1,3 +1,4 @@
+mod collection;
 mod concept;
 mod conference;
 mod config;
@@ -10,6 +11,7 @@ mod subject_term;
 mod synset;
 mod work;
 
+pub use collection::Collection;
 pub use concept::{Concept, ConceptKind};
 pub use config::Config;
 pub use error::Error;

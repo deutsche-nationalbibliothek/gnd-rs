@@ -3,7 +3,7 @@ use std::io::{self, Write};
 use std::path::PathBuf;
 
 use clap::Parser;
-use gnd::{Concept, Config, RelationKind, SynKind};
+use gnd::{Collection, Concept, Config, RelationKind, SynKind};
 use pica::matcher::{MatcherFlags, RecordMatcher};
 use pica::ReaderBuilder;
 use sophia::graph::inmem::LightGraph;
@@ -29,12 +29,14 @@ pub(crate) mod skos {
     namespace!(
         "http://www.w3.org/2004/02/skos/core#",
         Concept,
+        Collection,
         prefLabel,
         altLabel,
         hiddenLabel,
         broader,
         narrower,
-        related
+        related,
+        member
     );
 }
 
@@ -62,6 +64,12 @@ pub(crate) struct SkosifyArgs {
 }
 
 pub(crate) fn run(config: &Config, args: &SkosifyArgs) -> CliResult<()> {
+    let mut collections = config
+        .collections
+        .iter()
+        .filter_map(|c| Collection::try_from(c).ok())
+        .collect::<Vec<Collection>>();
+
     let filter_str =
         cli_option!(args.filter, config.concept.filter, DEFAULT_FILTER);
     let skip_invalid =
@@ -96,6 +104,10 @@ pub(crate) fn run(config: &Config, args: &SkosifyArgs) -> CliResult<()> {
             if filter.is_match(&record, &matcher_flags) {
                 let concept = Concept::from_record(&record, config)?;
                 let subj = Iri::new(concept.uri()).unwrap();
+
+                for collection in collections.iter_mut() {
+                    collection.add_record(&record, config)
+                }
 
                 graph.insert(&subj, &rdf::type_, &skos::Concept).unwrap();
 
@@ -136,6 +148,18 @@ pub(crate) fn run(config: &Config, args: &SkosifyArgs) -> CliResult<()> {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    for collection in collections {
+        for (uri, members) in collection.items().iter() {
+            let subj = Iri::new(uri).unwrap();
+            graph.insert(&subj, &rdf::type_, &skos::Collection).unwrap();
+
+            for member in members {
+                let obj = Iri::new(member).unwrap();
+                graph.insert(&subj, &skos::member, &obj).unwrap();
             }
         }
     }

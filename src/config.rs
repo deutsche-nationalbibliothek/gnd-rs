@@ -3,11 +3,14 @@ use std::path::PathBuf;
 
 use serde::Deserialize;
 
+use crate::collection::CollectionSpec;
 use crate::{Error, Result};
 
 #[derive(Deserialize, Default, PartialEq, Debug)]
 pub struct Config {
     pub concept: ConceptConfig,
+    #[serde(rename = "collection", default = "Vec::new")]
+    pub collections: Vec<CollectionSpec>,
     pub skosify: SkosifyConfig,
 }
 
