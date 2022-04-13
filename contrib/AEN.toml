@@ -12,7 +12,7 @@ base_uri = "http://d-nb.info/gnd/"
 gnd_id = false
 
 # Transliterate synonyms
-translit = "nfc"
+translit = "nfd"
 
 [skosify]
 
