@@ -71,7 +71,8 @@ impl ConceptBuilder for PersonBuilder {
         );
 
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"([^,]+),\s([^,]+)$").unwrap();
+            static ref RE: Regex =
+                Regex::new(r"([^,()]+),\s([^,()]+)$").unwrap();
         }
 
         if let Some(synonym) = get_synonym(
