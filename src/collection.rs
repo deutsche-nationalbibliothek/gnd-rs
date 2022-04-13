@@ -69,7 +69,7 @@ impl Collection {
             .map(|f| String::from(&self.base_uri) + &f)
             .collect::<Vec<String>>();
 
-        if keys.len() > 0 {
+        if !keys.is_empty() {
             if let Ok(uri) = SubjectTermBuilder::uri(record, config) {
                 for key in keys {
                     let mut entry = self.items.entry(key);
