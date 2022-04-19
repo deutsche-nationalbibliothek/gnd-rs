@@ -49,7 +49,7 @@ impl ConceptBuilder for SubjectTermBuilder {
         let mut concept =
             Concept::new(uri, relations, ConceptKind::SubjectTerm);
         let translit = config.concept.translit.as_ref();
-        let min_length = config.concept.min_synonym_length;
+        let min_length = config.concept.min_synonym_length.unwrap_or_default();
 
         if let Some(synonym) = get_synonym(
             record.first("041A").unwrap(),

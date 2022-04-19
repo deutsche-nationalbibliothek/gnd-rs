@@ -88,8 +88,8 @@ fn get_prefix(record: &StringRecord) -> Option<String> {
 
 impl ConceptBuilder for WorkBuilder {
     fn from_record(record: &StringRecord, config: &Config) -> Result<Concept> {
+        let min_length = config.concept.min_synonym_length.unwrap_or_default();
         let translit = config.concept.translit.as_ref();
-        let min_length = config.concept.min_synonym_length;
 
         let mut concept = Concept::new(
             Self::uri(record, config)?,

@@ -22,7 +22,7 @@ pub struct ConceptConfig {
     pub gnd_id: bool,
     pub skip_invalid: bool,
     pub translit: Option<TranslitChoice>,
-    pub min_synonym_length: usize,
+    pub min_synonym_length: Option<usize>,
 }
 
 impl Default for ConceptConfig {
@@ -33,7 +33,7 @@ impl Default for ConceptConfig {
             gnd_id: false,
             skip_invalid: false,
             translit: None,
-            min_synonym_length: 0,
+            min_synonym_length: None,
         }
     }
 }
