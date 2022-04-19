@@ -10,6 +10,9 @@ skip_invalid = true
 # Ignore synonyms less than `min_synonym_length`.
 min_synonym_length = 4
 
+# Ignore synonyms which match against `synonym_filter`.
+# synonym_filter = "\\(.*Motiv\\)$"
+
 # Use `base_uri` + IDN instead of GND ID
 base_uri = "http://d-nb.info/gnd/"
 gnd_id = false

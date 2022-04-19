@@ -2,6 +2,7 @@ use std::collections::HashSet;
 use std::fmt;
 
 use bstr::BString;
+use regex::Regex;
 use unicode_normalization::UnicodeNormalization;
 
 use crate::config::TranslitChoice;
@@ -41,6 +42,7 @@ pub struct SynonymBuilder {
     kind: SynKind,
     translit: Option<TranslitChoice>,
     min_length: usize,
+    filter: Option<Regex>,
 }
 
 impl SynonymBuilder {
@@ -51,6 +53,7 @@ impl SynonymBuilder {
             kind,
             translit: None,
             min_length: 0,
+            filter: None,
         }
     }
 
@@ -66,6 +69,10 @@ impl SynonymBuilder {
 
     pub fn min_length(mut self, min_length: usize) -> Self {
         self.min_length = min_length;
+        self
+    }
+    pub fn filter(mut self, filter: Option<&String>) -> Self {
+        self.filter = filter.map(|s| Regex::new(s).unwrap());
         self
     }
 
@@ -116,11 +123,17 @@ impl SynonymBuilder {
                 _ => self.buffer,
             };
 
-            if label.len() >= self.min_length {
-                Some(Synonym::new(&label, self.kind))
-            } else {
-                None
+            if label.len() < self.min_length {
+                return None;
             }
+
+            if let Some(filter) = self.filter {
+                if filter.is_match(&label) {
+                    return None;
+                }
+            }
+
+            Some(Synonym::new(&label, self.kind))
         } else {
             None
         }

@@ -15,10 +15,12 @@ fn get_synonym(
     kind: SynKind,
     translit: Option<&TranslitChoice>,
     min_length: usize,
+    synonym_filter: Option<&String>,
 ) -> Option<Synonym> {
     let mut synonym = Synonym::builder(kind)
         .translit(translit)
-        .min_length(min_length);
+        .min_length(min_length)
+        .filter(synonym_filter);
 
     for subfield in field.iter() {
         let value = subfield.value().to_string();
@@ -58,21 +60,34 @@ fn get_prefix(record: &StringRecord) -> Option<String> {
                 .any(|subfield| matcher.is_match(subfield, &flags))
             {
                 let result = match *tag {
-                    "028R" => {
-                        person::get_synonym(field, SynKind::Hidden, None, 0)
-                    }
+                    "028R" => person::get_synonym(
+                        field,
+                        SynKind::Hidden,
+                        None,
+                        0,
+                        None,
+                    ),
                     "029R" => corporate_body::get_synonym(
                         field,
                         SynKind::Hidden,
                         None,
                         0,
+                        None,
                     ),
-                    "030R" => {
-                        conference::get_synonym(field, SynKind::Hidden, None, 0)
-                    }
-                    "065R" => {
-                        place::get_synonym(field, SynKind::Hidden, None, 0)
-                    }
+                    "030R" => conference::get_synonym(
+                        field,
+                        SynKind::Hidden,
+                        None,
+                        0,
+                        None,
+                    ),
+                    "065R" => place::get_synonym(
+                        field,
+                        SynKind::Hidden,
+                        None,
+                        0,
+                        None,
+                    ),
                     _ => unreachable!(),
                 };
 
@@ -89,6 +104,7 @@ fn get_prefix(record: &StringRecord) -> Option<String> {
 impl ConceptBuilder for WorkBuilder {
     fn from_record(record: &StringRecord, config: &Config) -> Result<Concept> {
         let min_length = config.concept.min_synonym_length.unwrap_or_default();
+        let synonym_filter = config.concept.synonym_filter.as_ref();
         let translit = config.concept.translit.as_ref();
 
         let mut concept = Concept::new(
@@ -102,6 +118,7 @@ impl ConceptBuilder for WorkBuilder {
             SynKind::Preferred,
             translit,
             min_length,
+            synonym_filter,
         ) {
             if let Some(prefix) = get_prefix(record) {
                 if let Some(synonym) = SynonymBuilder::new(SynKind::Preferred)
@@ -116,9 +133,13 @@ impl ConceptBuilder for WorkBuilder {
         }
 
         for field in record.all("022@").unwrap_or_default() {
-            if let Some(synonym) =
-                get_synonym(field, SynKind::Alternative, translit, min_length)
-            {
+            if let Some(synonym) = get_synonym(
+                field,
+                SynKind::Alternative,
+                translit,
+                min_length,
+                synonym_filter,
+            ) {
                 if let Some(prefix) = get_prefix(record) {
                     if let Some(synonym) =
                         SynonymBuilder::new(SynKind::Alternative)

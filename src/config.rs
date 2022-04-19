@@ -23,6 +23,7 @@ pub struct ConceptConfig {
     pub skip_invalid: bool,
     pub translit: Option<TranslitChoice>,
     pub min_synonym_length: Option<usize>,
+    pub synonym_filter: Option<String>,
 }
 
 impl Default for ConceptConfig {
@@ -34,6 +35,7 @@ impl Default for ConceptConfig {
             skip_invalid: false,
             translit: None,
             min_synonym_length: None,
+            synonym_filter: None,
         }
     }
 }
