@@ -14,15 +14,16 @@ min_synonym_length = 4
 base_uri = "http://d-nb.info/gnd/"
 gnd_id = false
 
-
 # Transliterate synonyms
 translit = "nfd"
 
-# [[collection]]
-# name = "GND Subject Category"
-# path = "042A.a"
-# base_uri = "http://d-nb.info/standards/vocab/gnd/gnd-sc#"
-# filter = "^(\\d+|\\d+\\.\\d+)[a-z]*$"
+[[collection]]
+name = "GND Subject Category"
+path = "042A.a"
+base_uri = "http://d-nb.info/standards/vocab/gnd/gnd-sc#"
+filter = "^(\\d+|\\d+\\.\\d+)[a-z]*$"
+# minimum = 2
+# maximum = 1000
 
 # [[collection]]
 # name = "Geographic Area Code"

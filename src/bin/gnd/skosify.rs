@@ -154,6 +154,20 @@ pub(crate) fn run(config: &Config, args: &SkosifyArgs) -> CliResult<()> {
 
     for collection in collections {
         for (uri, members) in collection.items().iter() {
+            let length = members.len();
+
+            if let Some(minimum) = collection.minimum() {
+                if length < *minimum {
+                    continue;
+                }
+            }
+
+            if let Some(maximum) = collection.maximum() {
+                if length > *maximum {
+                    continue;
+                }
+            }
+
             let subj = Iri::new(uri).unwrap();
             graph.insert(&subj, &rdf::type_, &skos::Collection).unwrap();
 

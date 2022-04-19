@@ -17,6 +17,8 @@ pub struct Collection {
     pub(crate) filter: Option<Regex>,
     pub(crate) path: Path,
     pub(crate) items: HashMap<String, Vec<String>>,
+    pub(crate) minimum: Option<usize>,
+    pub(crate) maximum: Option<usize>,
 }
 
 impl Collection {
@@ -25,6 +27,8 @@ impl Collection {
         base_uri: S,
         filter: Option<Regex>,
         path: Path,
+        minimum: Option<usize>,
+        maximum: Option<usize>,
     ) -> Self
     where
         S: Into<String>,
@@ -35,6 +39,8 @@ impl Collection {
             items: HashMap::new(),
             filter,
             path,
+            minimum,
+            maximum,
         }
     }
 
@@ -52,6 +58,14 @@ impl Collection {
 
     pub fn items(&self) -> &HashMap<String, Vec<String>> {
         &self.items
+    }
+
+    pub fn minimum(&self) -> &Option<usize> {
+        &self.minimum
+    }
+
+    pub fn maximum(&self) -> &Option<usize> {
+        &self.maximum
     }
 
     pub fn add_record(&mut self, record: &StringRecord, config: &Config) {
@@ -92,6 +106,8 @@ pub struct CollectionSpec {
     pub base_uri: String,
     pub path: String,
     pub filter: Option<String>,
+    pub minimum: Option<usize>,
+    pub maximum: Option<usize>,
 }
 
 impl TryFrom<&CollectionSpec> for Collection {
@@ -112,6 +128,13 @@ impl TryFrom<&CollectionSpec> for Collection {
             None
         };
 
-        Ok(Collection::new(&spec.name, &spec.base_uri, filter, path))
+        Ok(Collection::new(
+            &spec.name,
+            &spec.base_uri,
+            filter,
+            path,
+            spec.minimum,
+            spec.maximum,
+        ))
     }
 }
