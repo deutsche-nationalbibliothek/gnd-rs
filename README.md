@@ -11,7 +11,6 @@ Die Tools sind nicht für den produktiven Einsatz empfohlen. Es wird kein Suppor
 
 ### skosify
 
-
 ```bash
 $ gnd --config contrib/AEN.toml tests/data/118515551.dat.gz
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -37,4 +36,29 @@ gnd:118515551 a skos:Concept;
     "Cherman Mproch"@de,
     "Broch, Hermann"@de;
   skos:prefLabel "Broch, Hermann (1886-1951)"@de.
+```
+
+### tabulate
+
+```bash
+$ gnd --config contrib/AEN.toml tabulate synonyms tests/data/118515551.dat.gz
+uri,kind,synonym
+http://d-nb.info/gnd/118515551,alternative,"Mproch, Cherman"
+http://d-nb.info/gnd/118515551,alternative,"브로흐, 헤르만"
+http://d-nb.info/gnd/118515551,hidden,"Broch, Hermann"
+http://d-nb.info/gnd/118515551,hidden,German Broch
+http://d-nb.info/gnd/118515551,alternative,"Broxi, Herman"
+http://d-nb.info/gnd/118515551,alternative,"Broch, Herman"
+http://d-nb.info/gnd/118515551,preferred,"Broch, Hermann (1886-1951)"
+http://d-nb.info/gnd/118515551,hidden,Herman Broxi
+http://d-nb.info/gnd/118515551,alternative,"Broch, German"
+http://d-nb.info/gnd/118515551,hidden,헤르만 브로흐
+http://d-nb.info/gnd/118515551,hidden,Hermann Broch
+http://d-nb.info/gnd/118515551,alternative,"ברוך, הרמן"
+http://d-nb.info/gnd/118515551,alternative,ヘルマン・ブロッホ
+http://d-nb.info/gnd/118515551,alternative,"Broh, Herman"
+http://d-nb.info/gnd/118515551,hidden,Cherman Mproch
+http://d-nb.info/gnd/118515551,hidden,הרמן ברוך
+http://d-nb.info/gnd/118515551,hidden,Herman Broh
+http://d-nb.info/gnd/118515551,hidden,Herman Broch
 ```
