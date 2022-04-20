@@ -87,25 +87,15 @@ pub(crate) trait ConceptBuilder {
     fn from_record(record: &StringRecord, config: &Config) -> Result<Concept>;
 
     fn uri(record: &StringRecord, config: &Config) -> Result<String> {
-        if config.concept.gnd_id {
-            Ok(record
-                .path(&GND_ID_PATH)
-                .first()
-                .map(ToString::to_string)
-                .ok_or_else(|| {
-                    Error::Concept("could not find valid gnd_id".to_string())
-                })?)
-        } else {
-            let idn = record
-                .path(&IDN_PATH)
-                .first()
-                .map(ToString::to_string)
-                .ok_or_else(|| {
+        let idn = record
+            .path(&IDN_PATH)
+            .first()
+            .map(ToString::to_string)
+            .ok_or_else(|| {
                 Error::Concept("could not find valid idn".to_string())
             })?;
 
-            Ok(config.concept.base_uri.to_owned() + &idn)
-        }
+        Ok(config.concept.base_uri.to_owned() + &idn)
     }
 
     fn relations(record: &StringRecord, config: &Config) -> Vec<Relation> {

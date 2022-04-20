@@ -9,6 +9,7 @@ homepage = "https://www.dnb.de/DE/Professionell/ProjekteKooperationen/Projekte/K
 [dependencies]
 bstr = "0.2"
 clap = { version = "3.0", features = ["derive"] }
+csv = "1.1"
 lazy_static = "1.4"
 pica = { git = "https://github.com/deutsche-nationalbibliothek/pica-rs.git", branch = "main" }
 regex = "1.5"

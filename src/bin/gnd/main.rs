@@ -8,6 +8,7 @@ use clap::Parser;
 mod cli;
 mod macros;
 mod skosify;
+mod tabulate;
 
 use cli::{Cli, Commands};
 use gnd::Config;
@@ -19,6 +20,7 @@ pub enum CliError {
     Pica(pica::Error),
     Gnd(gnd::Error),
     Io(io::Error),
+    Csv(csv::Error),
     Other(String),
 }
 
@@ -28,6 +30,7 @@ impl fmt::Display for CliError {
             CliError::Pica(ref e) => e.fmt(f),
             CliError::Gnd(ref e) => e.fmt(f),
             CliError::Io(ref e) => e.fmt(f),
+            CliError::Csv(ref e) => e.fmt(f),
             CliError::Other(ref s) => f.write_str(s),
         }
     }
@@ -51,6 +54,12 @@ impl From<io::Error> for CliError {
     }
 }
 
+impl From<csv::Error> for CliError {
+    fn from(err: csv::Error) -> Self {
+        CliError::Csv(err)
+    }
+}
+
 fn main() {
     let args = Cli::parse();
 
@@ -61,6 +70,7 @@ fn main() {
 
     let result = match args.command {
         Commands::Skosify(args) => skosify::run(&config, &args),
+        Commands::Tabulate(args) => tabulate::run(&config, &args),
     };
 
     match result {
@@ -80,6 +90,10 @@ fn main() {
         }
         Err(CliError::Pica(err)) => {
             eprintln!("pica: {}", err);
+            process::exit(1);
+        }
+        Err(CliError::Csv(err)) => {
+            eprintln!("csv: {}", err);
             process::exit(1);
         }
         Err(CliError::Other(err)) => {

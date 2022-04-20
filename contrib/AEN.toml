@@ -15,7 +15,6 @@ min_synonym_length = 4
 
 # Use `base_uri` + IDN instead of GND ID
 base_uri = "http://d-nb.info/gnd/"
-gnd_id = false
 
 # Transliterate synonyms
 translit = "nfd"
