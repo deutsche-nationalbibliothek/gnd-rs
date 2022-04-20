@@ -19,7 +19,6 @@ pub struct Config {
 pub struct ConceptConfig {
     pub filter: Option<String>,
     pub base_uri: String,
-    pub gnd_id: bool,
     pub skip_invalid: bool,
     pub translit: Option<TranslitChoice>,
     pub min_synonym_length: Option<usize>,
@@ -31,7 +30,6 @@ impl Default for ConceptConfig {
         Self {
             filter: None,
             base_uri: "http://d-nb.info/gnd/".to_string(),
-            gnd_id: false,
             skip_invalid: false,
             translit: None,
             min_synonym_length: None,
