@@ -35,6 +35,7 @@ pub(crate) fn get_synonym(
     translit: Option<&TranslitChoice>,
     min_length: usize,
     synonym_filter: Option<&String>,
+    no_initials: bool,
 ) -> Option<Synonym> {
     let mut synonym = Synonym::builder(kind)
         .translit(translit)
@@ -42,6 +43,14 @@ pub(crate) fn get_synonym(
         .filter(synonym_filter);
 
     if field.contains_code('a') {
+        if no_initials && field.contains_code('d') {
+            let forename = field.first('d').unwrap();
+
+            if forename.len() == 2 && forename[1] == b'.' {
+                return None;
+            }
+        }
+
         synonym = synonym
             .push(field.first('a'))
             .push_with_prefix(field.first('d'), ", ")
@@ -70,6 +79,7 @@ pub(crate) fn get_synonym(
 impl ConceptBuilder for PersonBuilder {
     fn from_record(record: &StringRecord, config: &Config) -> Result<Concept> {
         let min_length = config.concept.min_synonym_length.unwrap_or_default();
+        let no_initials = config.concept.person_no_initials.unwrap_or_default();
         let synonym_filter = config.concept.synonym_filter.as_ref();
         let translit = config.concept.translit.as_ref();
 
@@ -90,6 +100,7 @@ impl ConceptBuilder for PersonBuilder {
             translit,
             min_length,
             synonym_filter,
+            no_initials,
         ) {
             if let Some(captures) = RE.captures(synonym.label()) {
                 if let Some(hidden_label) = SynonymBuilder::new(SynKind::Hidden)
@@ -131,6 +142,7 @@ impl ConceptBuilder for PersonBuilder {
                 translit,
                 min_length,
                 synonym_filter,
+                no_initials,
             ) {
                 if let Some(captures) = RE.captures(synonym.label()) {
                     if let Some(hidden_label) =
