@@ -1,7 +1,7 @@
 use std::convert::Infallible;
 use std::str::FromStr;
 
-use pica::Field;
+use pica_core::Field;
 
 #[derive(Debug)]
 pub struct Relation {
