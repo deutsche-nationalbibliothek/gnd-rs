@@ -1,9 +1,8 @@
 use crate::concept::ConceptBuilder;
 use crate::config::TranslitChoice;
 use crate::{Concept, ConceptKind, Config, Result, SynKind, Synonym};
-use pica_core::{Field};
-use pica::{StringRecord};
-
+use pica::StringRecord;
+use pica_core::Field;
 
 pub(crate) struct CorporateBodyBuilder;
 

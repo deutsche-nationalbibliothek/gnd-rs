@@ -5,8 +5,8 @@ use crate::{Concept, ConceptKind, Config, Result, SynKind, Synonym};
 
 use lazy_static::lazy_static;
 use pica::matcher::{FieldMatcher, MatcherFlags};
-use pica::{StringRecord};
-use pica_core::{Field};
+use pica::StringRecord;
+use pica_core::Field;
 use regex::Regex;
 
 pub(crate) struct PersonBuilder;

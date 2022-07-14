@@ -60,7 +60,7 @@ impl Concept {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum ConceptKind {
     Person,
     CorporateBody,
@@ -127,12 +127,7 @@ impl Concept {
             "g" => PlaceBuilder::from_record(record, config),
             "s" => SubjectTermBuilder::from_record(record, config),
             "u" => WorkBuilder::from_record(record, config),
-            s => {
-                return Err(Error::Concept(format!(
-                    "unknown concept kind '{}'",
-                    s
-                )))
-            }
+            s => Err(Error::Concept(format!("unknown concept kind '{}'", s))),
         }
     }
 }

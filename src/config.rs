@@ -6,7 +6,7 @@ use serde::Deserialize;
 use crate::collection::CollectionSpec;
 use crate::{Error, Result};
 
-#[derive(Deserialize, Default, PartialEq, Debug)]
+#[derive(Deserialize, Default, PartialEq, Eq, Debug)]
 pub struct Config {
     pub concept: ConceptConfig,
     #[serde(rename = "collection", default = "Vec::new")]
@@ -14,7 +14,7 @@ pub struct Config {
     pub skosify: SkosifyConfig,
 }
 
-#[derive(Deserialize, PartialEq, Debug)]
+#[derive(Deserialize, PartialEq, Eq, Debug)]
 #[serde(deny_unknown_fields)]
 pub struct ConceptConfig {
     pub filter: Option<String>,
@@ -38,7 +38,7 @@ impl Default for ConceptConfig {
     }
 }
 
-#[derive(Deserialize, PartialEq, Debug, Clone)]
+#[derive(Deserialize, PartialEq, Eq, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "lowercase")]
 pub enum TranslitChoice {
@@ -48,15 +48,24 @@ pub enum TranslitChoice {
     Nfkd,
 }
 
-#[derive(Deserialize, PartialEq, Debug)]
+#[derive(Deserialize, PartialEq, Eq, Debug)]
 #[serde(deny_unknown_fields)]
 pub struct SkosifyConfig {
     pub pretty: bool,
+    #[serde(default = "default_language_tag")]
+    pub language_tag: String,
+}
+
+fn default_language_tag() -> String {
+    "de".to_string()
 }
 
 impl Default for SkosifyConfig {
     fn default() -> Self {
-        Self { pretty: true }
+        Self {
+            pretty: true,
+            language_tag: default_language_tag(),
+        }
     }
 }
 

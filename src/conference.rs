@@ -1,8 +1,10 @@
+use std::fmt::Write as _;
+
 use crate::concept::ConceptBuilder;
 use crate::config::TranslitChoice;
 use crate::{Concept, ConceptKind, Config, Result, SynKind, Synonym};
-use pica_core::{Field};
-use pica::{StringRecord};
+use pica::StringRecord;
+use pica_core::Field;
 
 const CHECK: [char; 4] = ['n', 'd', 'c', 'g'];
 
@@ -40,7 +42,7 @@ pub(crate) fn get_synonym(
                 if parens.is_empty() {
                     synonym = synonym.push_str(&format!(" ({})", value));
                 } else {
-                    parens.push_str(&format!(" ({})", value));
+                    let _ = write!(parens, " ({})", value);
                 }
             }
             'n' | 'd' | 'c' => {
