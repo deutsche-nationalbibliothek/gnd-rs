@@ -24,6 +24,7 @@ pub struct ConceptConfig {
     pub min_synonym_length: Option<usize>,
     pub synonym_filter: Option<String>,
     pub person_no_initials: Option<bool>,
+    pub person_no_modern_names: Option<bool>,
 }
 
 impl Default for ConceptConfig {
@@ -36,6 +37,7 @@ impl Default for ConceptConfig {
             min_synonym_length: None,
             synonym_filter: None,
             person_no_initials: None,
+            person_no_modern_names: None,
         }
     }
 }

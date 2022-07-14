@@ -37,6 +37,7 @@ impl Synonym {
     }
 }
 
+#[derive(Clone)]
 pub struct SynonymBuilder {
     buffer: String,
     kind: SynKind,
