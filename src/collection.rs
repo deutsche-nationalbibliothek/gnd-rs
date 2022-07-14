@@ -99,7 +99,7 @@ impl Collection {
     }
 }
 
-#[derive(Deserialize, PartialEq, Debug)]
+#[derive(Deserialize, PartialEq, Eq, Debug)]
 #[serde(deny_unknown_fields)]
 pub struct CollectionSpec {
     pub name: String,
