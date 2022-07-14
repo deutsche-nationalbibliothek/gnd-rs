@@ -13,9 +13,14 @@ min_synonym_length = 4
 # Ignore synonyms which match against `synonym_filter`.
 # synonym_filter = "\\(.*Motiv\\)$"
 
-# Ignore synonyms (only persons), where forename (subfield $d)
+# Ignore synonyms (only persons), when forename (subfield $d)
 # contains a single character followed by a ".".
-person_no_initials = true
+# person_no_initials = true
+
+# Ignore synonyms (only persons), when the pref-labels contains
+# subfields $d and $a and an alternative label contains only one
+# word.
+person_no_modern_names = true
 
 # Use `base_uri` + IDN instead of GND ID
 base_uri = "http://d-nb.info/gnd/"
@@ -23,7 +28,7 @@ base_uri = "http://d-nb.info/gnd/"
 # Transliterate synonyms
 translit = "nfd"
 
-[[collection]]
+# [[collection]]
 # name = "GND Subject Category"
 # path = "042A.a"
 # base_uri = "http://d-nb.info/standards/vocab/gnd/gnd-sc#"

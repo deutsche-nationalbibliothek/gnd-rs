@@ -36,6 +36,7 @@ pub(crate) fn get_synonym(
     min_length: usize,
     synonym_filter: Option<&String>,
     no_initials: bool,
+    no_modern_names: bool,
 ) -> Option<Synonym> {
     let mut synonym = Synonym::builder(kind)
         .translit(translit)
@@ -57,19 +58,27 @@ pub(crate) fn get_synonym(
             .push_with_prefix(field.first('c'), " ");
     } else if field.contains_code('P') {
         synonym = synonym.push(field.first('P'));
+        let mut segments = 1;
 
         match (field.first('n'), field.first('l')) {
             (Some(numeration), Some(title)) => {
                 synonym =
                     synonym.push_str(&format!(" ({}, {})", numeration, title));
+                segments += 1;
             }
             (Some(numeration), None) => {
                 synonym = synonym.push_str(&format!(" ({})", numeration));
+                segments += 1;
             }
             (None, Some(title)) => {
                 synonym = synonym.push_str(&format!(" ({})", title));
+                segments += 1;
             }
             (None, None) => (),
+        }
+
+        if no_modern_names && segments <= 1 {
+            return None;
         }
     }
 
@@ -80,6 +89,8 @@ impl ConceptBuilder for PersonBuilder {
     fn from_record(record: &StringRecord, config: &Config) -> Result<Concept> {
         let min_length = config.concept.min_synonym_length.unwrap_or_default();
         let no_initials = config.concept.person_no_initials.unwrap_or_default();
+        let mut no_modern_names =
+            config.concept.person_no_modern_names.unwrap_or_default();
         let synonym_filter = config.concept.synonym_filter.as_ref();
         let translit = config.concept.translit.as_ref();
 
@@ -101,6 +112,7 @@ impl ConceptBuilder for PersonBuilder {
             min_length,
             synonym_filter,
             no_initials,
+            false,
         ) {
             if let Some(captures) = RE.captures(synonym.label()) {
                 if let Some(hidden_label) = SynonymBuilder::new(SynKind::Hidden)
@@ -135,6 +147,11 @@ impl ConceptBuilder for PersonBuilder {
             }
         }
 
+        let field = record.first("028A").unwrap();
+        if !(field.contains_code('d') && field.contains_code('a')) {
+            no_modern_names = false;
+        }
+
         for field in record.all("028@").unwrap_or_default() {
             if let Some(synonym) = get_synonym(
                 field,
@@ -143,6 +160,7 @@ impl ConceptBuilder for PersonBuilder {
                 min_length,
                 synonym_filter,
                 no_initials,
+                no_modern_names,
             ) {
                 if let Some(captures) = RE.captures(synonym.label()) {
                     if let Some(hidden_label) =
