@@ -127,12 +127,7 @@ impl Concept {
             "g" => PlaceBuilder::from_record(record, config),
             "s" => SubjectTermBuilder::from_record(record, config),
             "u" => WorkBuilder::from_record(record, config),
-            s => {
-                Err(Error::Concept(format!(
-                    "unknown concept kind '{}'",
-                    s
-                )))
-            }
+            s => Err(Error::Concept(format!("unknown concept kind '{}'", s))),
         }
     }
 }
