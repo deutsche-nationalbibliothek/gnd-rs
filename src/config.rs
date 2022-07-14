@@ -52,11 +52,20 @@ pub enum TranslitChoice {
 #[serde(deny_unknown_fields)]
 pub struct SkosifyConfig {
     pub pretty: bool,
+    #[serde(default = "default_language_tag")]
+    pub language_tag: String,
+}
+
+fn default_language_tag() -> String {
+    "de".to_string()
 }
 
 impl Default for SkosifyConfig {
     fn default() -> Self {
-        Self { pretty: true }
+        Self {
+            pretty: true,
+            language_tag: default_language_tag(),
+        }
     }
 }
 

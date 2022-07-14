@@ -48,3 +48,6 @@ filter = "^(\\d+|\\d+\\.\\d+)[a-z]*$"
 
 # Whether to beautify (indent, prefixes) the output or not.
 pretty = true
+
+# Use this language tag for all labels.
+language_tag = "de"

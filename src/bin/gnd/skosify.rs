@@ -112,9 +112,11 @@ pub(crate) fn run(config: &Config, args: &SkosifyArgs) -> CliResult<()> {
                 graph.insert(&subj, &rdf::type_, &skos::Concept).unwrap();
 
                 for synonym in concept.synset() {
-                    let literal =
-                        Literal::<Box<str>>::new_lang(synonym.label(), "de")
-                            .unwrap();
+                    let literal = Literal::<Box<str>>::new_lang(
+                        synonym.label(),
+                        config.skosify.language_tag.as_str(),
+                    )
+                    .unwrap();
                     match *synonym.kind() {
                         SynKind::Preferred => {
                             graph
