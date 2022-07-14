@@ -19,26 +19,21 @@ fn get_synonym(
         .filter(synonym_filter);
 
     if field.contains_code('a') {
-        synonym = synonym.push(field.first('a'));
+        for subfield in field.iter() {
+            let value = subfield.value().to_string();
 
-        if let Some(gs) = field.all('g') {
-            synonym = synonym.push_str(&format!(
-                " ({})",
-                gs.iter()
-                    .map(ToString::to_string)
-                    .collect::<Vec<String>>()
-                    .join(", "),
-            ));
-        }
-
-        if let Some(xs) = field.all('x') {
-            synonym = synonym.push_str(&format!(
-                " / {}",
-                xs.iter()
-                    .map(ToString::to_string)
-                    .collect::<Vec<String>>()
-                    .join(" / "),
-            ));
+            match subfield.code() {
+                'a' => {
+                    synonym = synonym.push_str(value);
+                }
+                'g' => {
+                    synonym = synonym.push_str(&format!(" ({})", value));
+                }
+                'x' => {
+                    synonym = synonym.push_str(&format!(" / {}", value));
+                }
+                _ => continue,
+            }
         }
     }
 
