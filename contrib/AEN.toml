@@ -13,6 +13,10 @@ min_synonym_length = 4
 # Ignore synonyms which match against `synonym_filter`.
 # synonym_filter = "\\(.*Motiv\\)$"
 
+# Ignore synonyms (only persons), where forename (subfield $d)
+# contains a single character followed by a ".".
+person_no_initials = true
+
 # Use `base_uri` + IDN instead of GND ID
 base_uri = "http://d-nb.info/gnd/"
 
@@ -20,10 +24,10 @@ base_uri = "http://d-nb.info/gnd/"
 translit = "nfd"
 
 [[collection]]
-name = "GND Subject Category"
-path = "042A.a"
-base_uri = "http://d-nb.info/standards/vocab/gnd/gnd-sc#"
-filter = "^(\\d+|\\d+\\.\\d+)[a-z]*$"
+# name = "GND Subject Category"
+# path = "042A.a"
+# base_uri = "http://d-nb.info/standards/vocab/gnd/gnd-sc#"
+# filter = "^(\\d+|\\d+\\.\\d+)[a-z]*$"
 # minimum = 2
 # maximum = 1000
 
